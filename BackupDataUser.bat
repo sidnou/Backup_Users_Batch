@@ -4,13 +4,14 @@ CHCP 65001
 ::###############################################################################################
 ::##############
 ::##############                     BackupDataUser.bat
-::##############
-::##############                      sidjack972@gmail.com
-::##############
+::##############                        Version 1.0
+::##############                     sidjack972@gmail.com
+::##############                        
 ::##############
 ::###############################################################################################
 ::###############################################################################################
-::##############     Version: 1.0 21/11/15 
+::##############     Version: 
+::##############              1.0 21/11/15 Création
 ::##############
 ::##############
 ::##############
@@ -29,7 +30,8 @@ CHCP 65001
 ECHO OFF
 TITLE SAUVEGARDE RESTAURE DONNEES UTILISATEUR  
 :: Selection du systeme Windows XP,vista,7,8,8.1
-CLS
+CLS 
+SET lecteurBackup=%CD%
 ECHO.
 ECHO.
 ECHO.
@@ -43,18 +45,16 @@ ECHO.
 ECHO.
 ECHO.
 ECHO.
-ECHO.
-ECHO.
-ECHO         +----------------------------------------------------+
-ECHO         :                                                    :
-ECHO         :     Selectinner sauvegarde ou restauration du      :
-ECHO         :     systeme :                                      :
-ECHO         :                                                    :
-ECHO         :     1 )  Sauvegarde                                :
-ECHO         :     2 )  Restauration                              :
-ECHO         :                                                    :
-ECHO         :                                                    :
-ECHO         +----------------------------------------------------+
+ECHO        +-----------------------------------------------------+
+ECHO        :                                                     :
+ECHO        :      Selectinner sauvegarde ou restauration du      :
+ECHO        :     s ysteme :                                      :
+ECHO        :                                                     :
+ECHO        :      1 )  Sauvegarde                                :
+ECHO        :      2 )  Restauration                              :
+ECHO        :                                                     :
+ECHO        :                                                     :
+ECHO        +-----------------------------------------------------+
 ECHO.
 ECHO.
 SET /P modeBackup=Taper 1 ou 2: 
@@ -82,8 +82,7 @@ IF /I NOT %systemBackup%==1 GOTO SAVE
 
 :: Windows XP
 :WINXP
-SET appBackup=robocopy32.exe
-SET dossierUsers=Documents and Settings
+SET appBackup=\Apps\robocopyXP.exe
 SET documentsUser=Mes documents
 SET bureauUser=Bureau
 SET favorisUser=Favoris
@@ -91,8 +90,7 @@ GOTO BACKUP
 
 :: Windows Vista 7 8 8.1 10
 :WIN
-SET appBackup=robocopy.exe
-SET dossierUsers=Users
+SET appBackup=\Apps\robocopy.exe
 SET documentsUser=Documents
 SET imagesUser=Pictures
 SET bureauUser=Desktop
@@ -101,35 +99,33 @@ SET videoUser=Videos
 SET favorisUser=Favorites
 SET contactsUser=Contacts
 GOTO BACKUP
-
-:BACKUP 
-:: Nom de l'utilisateur 
-SET /P nomUser=Entrer le nom de l'utilisateur : 
-:: selection du support de backup
-SET /P lecteurBackup= Entrer la lettre du support de Backup (exemple E sans :\ ) : 
+::==========================================================================================================
+::====================================== PARTIE BACKUP =====================================================
+::==========================================================================================================
+:BACKUP  
 :: Sauvegarde des donnees utilisateur
 :: Creation du dossier BACKUP_Utilisateur
-MKDIR "%lecteurBackup%:\BACKUP_%nomUser%"
-SET dossierBackup=%lecteurBackup%:\BACKUP_%nomUser%\
+MKDIR "%lecteurBackup%\
+SET dossierBackup=%lecteurBackup%:\%USERNAME%\
 :: Log de sauvegarde
-SET logSave="%lecteurBackup%:\BACKUP_%nomUser%\Save.txt"
+SET logSave="%lecteurBackup%:\%USERNAME%\Log_Backup.txt"
 
 :: Sauvegarde Des Fichiers 
 ECHO ###### DEBUT DE SAUVEGARDE ######>>%logSave%
 ECHO %DATE% %TIME%>>%logSave%
 REM =========== MES DOCUMENTS ===============
 ECHO ########## DEBUT SAVE MES DOCUMENTS ####### %DATE% %TIME% #####>>%logSave% 
-%appBackup% "C:\%dossierUsers%\%nomUser%\%documentsUser%" "%dossierBackup%Documents" /E /XO /r:2 /w:10 /TEE /LOG+:%logSave%
+%appBackup% "%USERPROFILE%\%documentsUser%" "%dossierBackup%Documents" /E /XO /r:2 /w:10 /TEE /LOG+:%logSave%
 ECHO ====== FIN SAVE MES DOCUMENTS ===== %DATE% %TIME% ====>>%logSave% 
 
 REM ============= BUREAU =================
 ECHO ########## DEBUT SAVE BUREAU ########### %DATE% %TIME% ######>>%logSave%
-%appBackup% "C:\%dossierUsers%\%nomUser%\%bureauUser%" "%dossierBackup%Bureau" /E /XO /r:2 /w:10 /TEE /LOG+:%logSave%
+%appBackup% "%USERPROFILE%\%bureauUser%" "%dossierBackup%Bureau" /E /XO /r:2 /w:10 /TEE /LOG+:%logSave%
 ECHO ====== FIN SAVE BUREAU ===== %DATE% %TIME% ====>>%logSave% 
 
 REM ============= FAVORIS =================
 ECHO ########## DEBUT SAVE FAVORIS ########### %DATE% %TIME% ######>>%logSave%
-%appBackup% "C:\%dossierUsers%\%nomUser%\%favorisUser%" "%dossierBackup%Favoris" /E /XO /r:2 /w:10 /TEE /LOG+:%logSave%
+%appBackup% "%USERPROFILE%\%favorisUser%" "%dossierBackup%Favoris" /E /XO /r:2 /w:10 /TEE /LOG+:%logSave%
 ECHO ====== FIN SAVE FAVORIS ===== %DATE% %TIME% ====>>%logSave% 
 
 REM Si OS est Windows XP alors saute a partir d'ici
@@ -137,29 +133,31 @@ IF %systemBackup%==1 GOTO FINSAVE
 
 REM ============= IMAGES =================
 ECHO ########## DEBUT SAVE IMAGES ########### %DATE% %TIME% ######>>%logSave%
-%appBackup% "C:\%dossierUsers%\%nomUser%\%imagesUser%" "%dossierBackup%Images" /E /XO /r:2 /w:10 /TEE /LOG+:%logSave%
+%appBackup% "%USERPROFILE%\%imagesUser%" "%dossierBackup%Images" /E /XO /r:2 /w:10 /TEE /LOG+:%logSave%
 ECHO ######## FIN SAVE IMAGES ####### %DATE% %TIME% #####>>%logSave%
 
 REM ============= VIDEOS =================
 ECHO ########## DEBUT SAVE VIDEOS ########### %DATE% %TIME% ######>>%logSave%
-%appBackup% "C:\%dossierUsers%\%nomUser%\%videoUser%" "%dossierBackup%Videos" /E /XO /r:2 /w:10 /TEE /LOG+:%logSave%
+%appBackup% "%USERPROFILE%\%videoUser%" "%dossierBackup%Videos" /E /XO /r:2 /w:10 /TEE /LOG+:%logSave%
 ECHO ====== FIN SAVE VIDEOS ===== %DATE% %TIME% ====>>%logSave% 
 
 REM ============= MUSIQUE =================
 ECHO ########## DEBUT SAVE MUSIQUE ########### %DATE% %TIME% ######>>%logSave%
-%appBackup% "C:\%dossierUsers%\%nomUser%\%musiqueUser%" "%dossierBackup%Musiques" /E /XO /r:2 /w:10 /TEE /LOG+:%logSave%
+%appBackup% "%USERPROFILE%\%musiqueUser%" "%dossierBackup%Musiques" /E /XO /r:2 /w:10 /TEE /LOG+:%logSave%
 ECHO ====== FIN SAVE MUSIQUE ===== %DATE% %TIME% ====>>%logSave% 
 
 REM ============= CONTACTS =================
 ECHO ########## DEBUT SAVE CONTACTS ########### %DATE% %TIME% ######>>%logSave%
-%appBackup% "C:\%dossierUsers%\%nomUser%\%contactsUser%" "%dossierBackup%Contacts" /E /XO /r:2 /w:10 /TEE /LOG+:%logSave%
+%appBackup% "%USERPROFILE%\%contactsUser%" "%dossierBackup%Contacts" /E /XO /r:2 /w:10 /TEE /LOG+:%logSave%
 ECHO ====== FIN SAVE CONTACTS ===== %DATE% %TIME% ====>>%logSave% 
-
 
 :FINSAVE
 ECHO ############## FIN DES SAUVEGARDES ##########>>%logSave%
 GOTO FIN
 
+::===================================================================================
+::============================= PARTIE RESTAURATIONS ================================
+::===================================================================================
 :RESTOR
 :: Menu de restauration
 CLS
@@ -193,8 +191,7 @@ IF NOT %modeRestor%==1 GOTO RESTOR
 :: Backup USB win 7, 8, 8.1 et 10 vers disque dur
 :USB_HDD
 :: Variables
-SET appBackup=robocopy.exe
-SET dossierUsers=Users
+SET appBackup=\Apps\robocopy.exe
 SET documentsUser=Documents
 SET imagesUser=Pictures
 SET bureauUser=Desktop
@@ -219,7 +216,7 @@ COLOR 0e
 TIMEOUT /t 10
 COLOR OE
 :: Variables
-SET appBackup=robocopy32.exe
+SET appBackup=\Apps\robocopyXP.exe
 SET dossierUsers=Documents and Settings
 SET documentsUser=Mes documents
 SET bureauUser=Bureau
@@ -227,35 +224,27 @@ SET favorisUser=Favoris
 GOTO DEBUTRESTOR
 
 :DEBUTRESTOR
-:: Nom de l'utilisateur 
-SET /P nomUser=Entrer le nom de l'utilisateur : 
-ECHO.
-:: Support de backup 
-SET /P lecteurBackup= Entrer la lettre du support de Backup (exemple E sans :\ ): 
-:: Support de destination 
-SET /P lecteurDest= Entrer la lettre du support de destination (exemple C sans :\ ): 
-ECHO.
 :: Restauration des donnees utilisateur
-SET dossierBackup=%lecteurBackup%:\BACKUP_%nomUser%\
+SET dossierBackup=%lecteurBackup%\%USERNAME%\
 :: Log de restauration
-SET logRestor="%lecteurBackup%:\BACKUP_%nomUser%\Restor.txt"
+SET logRestor=%lecteurBackup%\%USERNAME%\Log_Restor.txt
 
 :: Restauration Des Fichiers 
 ECHO ###### DEBUT DES RESTAURATIONS ######>>%logRestor%
 ECHO %DATE% %TIME%>>%logRestor%
 REM =========== MES DOCUMENTS ===============
 ECHO ########## DEBUT RESTOR MES DOCUMENTS ####### %DATE% %TIME% #####>>%logRestor% 
-%appBackup% "%dossierBackup%Documents" "%lecteurDest%:\%dossierUsers%\%nomUser%\%documentsUser%" /E /XO /r:2 /w:10 /TEE /LOG+:%logRestor%
+%appBackup% "%dossierBackup%Documents" "%USERPROFILE%\%documentsUser%" /E /XO /r:2 /w:10 /TEE /LOG+:%logRestor%
 ECHO ====== FIN RSTOR MES DOCUMENTS ===== %DATE% %TIME% ====>>%logRestor% 
 
 REM ============= BUREAU =================
 ECHO ########## DEBUT SAVE BUREAU ########### %DATE% %TIME% ######>>%logRestor%
-%appBackup% "%dossierBackup%Bureau" "%lecteurDest%:\%dossierUsers%\%nomUser%\%bureauUser%" /E /XO /r:2 /w:10 /TEE /LOG+:%logRestor%
+%appBackup% "%dossierBackup%Bureau" "%USERPROFILE%\%bureauUser%" /E /XO /r:2 /w:10 /TEE /LOG+:%logRestor%
 ECHO ====== FIN DEBUT BUREAU ===== %DATE% %TIME% ====>>%logRestor% 
 
 REM ============= FAVORIS =================
 ECHO ########## DEBUT RESTOR FAVORIS ########### %DATE% %TIME% ######>>%logRestor%
-%appBackup% "%dossierBackup%Favoris" "%lecteurDest%:\%dossierUsers%\%nomUser%\%favorisUser%" /E /XO /r:2 /w:10 /TEE /LOG+:%logRestor%
+%appBackup% "%dossierBackup%Favoris" "%USERPROFILE%\%favorisUser%" /E /XO /r:2 /w:10 /TEE /LOG+:%logRestor%
 ECHO ====== FIN RESTOR FAVORIS ===== %DATE% %TIME% ====>>%logRestor% 
 
 REM Si OS est Windows XP alors saute a partir d'ici
@@ -263,22 +252,22 @@ IF %modeRestor%==3 GOTO FINRESTOR
 
 REM ============= IMAGES =================
 ECHO ########## DEBUT RESTOR IMAGES ########### %DATE% %TIME% ######>>%logRestor%
-%appBackup% "%dossierBackup%Images" "%lecteurDest%:\%dossierUsers%\%nomUser%\%imagesUser%" /E /XO /r:2 /w:10 /TEE /LOG+:%logRestor%
+%appBackup% "%dossierBackup%Images" "%USERPROFILE%\%imagesUser%" /E /XO /r:2 /w:10 /TEE /LOG+:%logRestor%
 ECHO ######## FIN RESTOR IMAGES ####### %DATE% %TIME% #####>>%logRestor%
 
 REM ============= VIDEOS =================
 ECHO ########## DEBUT VIDEOS ########### %DATE% %TIME% ######>>%logRestor%
-%appBackup% "%dossierBackup%Videos" "%lecteurDest%:\%dossierUsers%\%nomUser%\%videoUser%" /E /XO /r:2 /w:10 /TEE /LOG+:%logRestor%
+%appBackup% "%dossierBackup%Videos" "%USERPROFILE%\%videoUser%" /E /XO /r:2 /w:10 /TEE /LOG+:%logRestor%
 ECHO ####### FIN RESTOR VIDEOS ===== %DATE% %TIME% ====>>%logRestor% 
 
 REM ============= MUSIQUE =================
 ECHO ########## DEBUT MUSIQUE ########### %DATE% %TIME% ######>>%logRestor%
-%appBackup% "%dossierBackup%Musiques" "%lecteurDest%:\%dossierUsers%\%nomUser%\%musiqueUser%" /E /XO /r:2 /w:10 /TEE /LOG+:%logRestor%
+%appBackup% "%dossierBackup%Musiques" "%USERPROFILE%\%musiqueUser%" /E /XO /r:2 /w:10 /TEE /LOG+:%logRestor%
 ECHO ######### FIN RESTOR MUSIQUE ===== %DATE% %TIME% ====>>%logRestor% 
 
 REM ============= CONTACTS =================
 ECHO ########## DEBUT CONTACTS ########### %DATE% %TIME% ######>>%logRestor%
-%appBackup% "%dossierBackup%Contacts" "%lecteurDest%:\%dossierUsers%\%nomUser%\%contactsUser%" /E /XO /r:2 /w:10 /TEE /LOG+:%logRestor%
+%appBackup% "%dossierBackup%Contacts" "%USERPROFILE%\%contactsUser%" /E /XO /r:2 /w:10 /TEE /LOG+:%logRestor%
 ECHO ########## FIN RESTOR CONTACTS ===== %DATE% %TIME% ====>>%logRestor% 
 
 
@@ -289,20 +278,12 @@ GOTO FIN
 
 :: Backup Windows XP vers Windows 7, 8, 8.1 et 10
 :WINXP_WIN7
- :: Nom de l'utilisateur 
-SET /P nomUser=Entrer le nom de l'utilisateur : 
-ECHO.
-:: Support de backup 
-SET /P lecteurBackup= Entrer la lettre du support de Backup (exemple E sans :\ ): 
-:: Support de destination 
-SET /P lecteurDest= Entrer la lettre du support de destination (exemple C sans :\ ):
 :: Restauration des donnees utilisateur
-SET dossierBackup=%lecteurBackup%:\BACKUP_%nomUser%\
+SET dossierBackup=%lecteurBackup%\%USERNAME%\
 :: Log de restauration
-SET logRestor="%lecteurBackup%:\BACKUP_%nomUser%\Restor.txt"
+SET logRestor="%lecteurBackup%\%USERNAME%\Restor.txt"
 :: Variables 
-SET appBackup=robocopy.exe
-SET dossierUsers=Users
+SET appBackup=\Apps\robocopy.exe
 SET documentsUser=Documents
 SET imagesUser=Pictures
 SET bureauUser=Desktop
@@ -315,23 +296,23 @@ ECHO.
 ECHO ########## DEBUT DES RESTAURATIONS ############ %DATE% %TIME% ######>>%logRestor%
 REM ============= DOCUMENTS ===========
 ECHO ########## DEBUT RESTOR MES DOCUMENTS ####### %DATE% %TIME% #####>>%logRestor% 
-%appBackup% "%dossierBackup%Documents" "%lecteurDest%:\%dossierUsers%\%nomUser%\%documentsUser%" /E /XO /r:2 /w:10 /TEE /XD "%dossierBackup%Documents\Mes images" /XD "%dossierBackup%Documents\Ma musique"  /LOG+:%logRestor%
+%appBackup% "%dossierBackup%Documents" "%USERPROFILE%\%documentsUser%" /E /XO /r:2 /w:10 /TEE /XD "%dossierBackup%Documents\Mes images" /XD "%dossierBackup%Documents\Ma musique"  /LOG+:%logRestor%
 ECHO ====== FIN RSTOR MES DOCUMENTS ===== %DATE% %TIME% ====>>%logRestor% 
 REM ============= BUREAU ==============
 ECHO ########## DEBUT SAVE BUREAU ########### %DATE% %TIME% ######>>%logRestor%
-%appBackup% "%dossierBackup%Bureau" "%lecteurDest%:\%dossierUsers%\%nomUser%\%bureauUser%" /E /XO /r:2 /w:10 /TEE /LOG+:%logRestor%
+%appBackup% "%dossierBackup%Bureau" "%USERPROFILE%\%bureauUser%" /E /XO /r:2 /w:10 /TEE /LOG+:%logRestor%
 ECHO ====== FIN DEBUT BUREAU ===== %DATE% %TIME% ====>>%logRestor% 
 REM ============= FAVORIS =================
 ECHO ########## DEBUT RESTOR FAVORIS ########### %DATE% %TIME% ######>>%logRestor%
-%appBackup% "%dossierBackup%Favoris" "%lecteurDest%:\%dossierUsers%\%nomUser%\%favorisUser%" /E /XO /r:2 /w:10 /TEE /LOG+:%logRestor%
+%appBackup% "%dossierBackup%Favoris" "%USERPROFILE%\%favorisUser%" /E /XO /r:2 /w:10 /TEE /LOG+:%logRestor%
 ECHO ====== FIN RESTOR FAVORIS ===== %DATE% %TIME% ====>>%logRestor%
 REM ============= IMAGES =================
 ECHO ########## DEBUT RESTOR IMAGES ########### %DATE% %TIME% ######>>%logRestor%
-%appBackup% "%dossierBackup%Documents\Mes images" "%lecteurDest%:\%dossierUsers%\%nomUser%\%imagesUser%" /E /XO /r:2 /w:10 /TEE /LOG+:%logRestor%
+%appBackup% "%dossierBackup%Documents\Mes images" "%USERPROFILE%\%imagesUser%" /E /XO /r:2 /w:10 /TEE /LOG+:%logRestor%
 ECHO ######## FIN RESTOR IMAGES ####### %DATE% %TIME% #####>>%logRestor%
 REM ============= MUSIQUE =================
 ECHO ########## DEBUT MUSIQUE ########### %DATE% %TIME% ######>>%logRestor%
-%appBackup% "%dossierBackup%Documents\Ma musique" "%lecteurDest%:\%dossierUsers%\%nomUser%\%musiqueUser%" /E /XO /r:2 /w:10 /TEE /LOG+:%logRestor%
+%appBackup% "%dossierBackup%Documents\Ma musique" "%USERPROFILE%\%musiqueUser%" /E /XO /r:2 /w:10 /TEE /LOG+:%logRestor%
 ECHO ######### FIN RESTOR MUSIQUE ===== %DATE% %TIME% ====>>%logRestor% 
 
 :: Fin de la restauration 
@@ -341,4 +322,5 @@ GOTO FIN
 :FIN
 :: FIN 
 PAUSE
+
 EXIT
